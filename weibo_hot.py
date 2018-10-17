@@ -17,11 +17,11 @@ num=tree.cssselect('tr>td>span')
 a=[{"tag":tag[i].text,'num':num[i].text} for i in range(len(tag)) ]
 
 
-＃将爬取到的数据存入数据库
+#将爬取到的数据存入数据库
 x=mycol.insert_many(a)
 
 
-＃调试过程与数据存储结果
+#调试过程与数据存储结果
 if __name__=='__main__':
     print([tag.text for tag in tag])
     print(len([tag.text for tag in tag]))
