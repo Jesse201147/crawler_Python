@@ -1,8 +1,9 @@
 # crawler_Python
 
-这些是我在学习Python爬虫时的一部分练手项目:
-
+这些是我在学习Python爬虫时的一部分练手项目:  
+  
 ZhiHu_issue.py(爬取知乎issue:432035497 所有回答):  
+  
   1 GET 此问题下的网页源码  
   2 从此问题的网页源码中解析第一个回答的URL  
   3 从第一个回答URL中提取作者id,name,回答文本 存储格式{'name': '', 'id': '', 'content':''}  
