@@ -1,7 +1,5 @@
-# crawler_Python
+# 这些是我在学习Python爬虫时的一部分练手项目:
 
-这些是我在学习Python爬虫时的一部分练手项目:  
-  
 ZhiHu_issue.py(爬取知乎issue:432035497 所有回答):  
   
   1 GET 此问题下的网页源码  
