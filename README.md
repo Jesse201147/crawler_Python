@@ -22,5 +22,3 @@ ZhiHu_issue.py(爬取知乎issue:432035497 所有回答):
   2 使用match_id从官方AIP查询比赛详情,解析出 heroid KDA GPM XPM 
   3 将比赛数据存入MongoDB
  
- 
- 
