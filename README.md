@@ -1,5 +1,14 @@
 # 这些是我在学习Python爬虫时的一部分练手项目:
 
+Twitter_crawl.py(登录Twitter,搜索抓取搜索到相关内容的作者详细信息):  
+  
+  1 使用selenium 登录Twitter 获取cookies  
+  2 使用cookies获取搜索页面,从中解析出搜索到twitter的position参数
+  3 使用position得到搜索结果,从中解析出twitter作者的key,与下一个posion
+  4 循环3 直至爬到想要的数量
+  5 使用作者的key 爬取作者主页,从中解析作者详细信息
+
+
 ZhiHu_issue.py(爬取知乎issue:432035497 所有回答):  
   
   1 GET 此问题下的网页源码  
