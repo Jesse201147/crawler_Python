@@ -1,25 +1,31 @@
 #!/usr/bin/python
-# -*- coding: UTF-8 -*-
-
 import requests
-from selenium import webdriver
 import time
-
+import re
+from selenium import webdriver
 
 email = '962080565@qq.com'
 password = '1111111l'
+mykey = '/ogcS2b43dNG5NS0'
+true = True
+false = False
 headers = {
-    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36'
+    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.77 Safari/537.36',
+    'authority': 'twitter.com',
+    'referer': f'https://twitter.com{mykey}'
 }
+
 proxies = {
     "http": "socks5://127.0.0.1:1080",
     "https": "socks5://127.0.0.1:1080"
 }
 session = requests.Session()
-
+session.headers = headers
+session.proxies=proxies
 
 def login():
     # 使用selenium 登录返回cookies
+    jar = requests.cookies.RequestsCookieJar()
     driver = webdriver.Firefox()
     driver.get("https://twitter.com/login")
     driver.find_element_by_css_selector('div.clearfix.field > input[name="session[username_or_email]"]').send_keys(
@@ -28,24 +34,94 @@ def login():
     driver.find_element_by_css_selector('.EdgeButtom--medium').click()
     cookies = driver.get_cookies()
     driver.close()
-    # cookies=[{'name': 'personalization_id', 'value': '"v1_jJOcwroHKQkTDDh2a73YCg=="', 'path': '/', 'domain': '.twitter.com', 'secure': False, 'httpOnly': False, 'expiry': 1603970312}, {'name': 'guest_id', 'value': 'v1%3A154089831274152553', 'path': '/', 'domain': '.twitter.com', 'secure': False, 'httpOnly': False, 'expiry': 1603970312}, {'name': 'ct0', 'value': 'fc9d4f11e4cdfc63fe49bd83ac2ced95', 'path': '/', 'domain': '.twitter.com', 'secure': True, 'httpOnly': False, 'expiry': 1540919912}, {'name': '_ga', 'value': 'GA1.2.1511951414.1540898320', 'path': '/', 'domain': '.twitter.com', 'secure': False, 'httpOnly': False, 'expiry': 1603970319}, {'name': '_gid', 'value': 'GA1.2.1397764081.1540898320', 'path': '/', 'domain': '.twitter.com', 'secure': False, 'httpOnly': False, 'expiry': 1540984719}, {'name': '_gat', 'value': '1', 'path': '/', 'domain': '.twitter.com', 'secure': False, 'httpOnly': False, 'expiry': 1540898379}, {'name': 'dnt', 'value': '1', 'path': '/', 'domain': '.twitter.com', 'secure': False, 'httpOnly': False, 'expiry': 1856258320}, {'name': 'ads_prefs', 'value': '"HBESAAA="', 'path': '/', 'domain': '.twitter.com', 'secure': False, 'httpOnly': False, 'expiry': 1856258320}, {'name': 'kdt', 'value': '6xoKZvDCHFSX36fv6TboSqTytpEICzAMXGaW4nX5', 'path': '/', 'domain': '.twitter.com', 'secure': True, 'httpOnly': True, 'expiry': 1588159120}, {'name': 'remember_checked_on', 'value': '1', 'path': '/', 'domain': '.twitter.com', 'secure': False, 'httpOnly': False, 'expiry': 1856258320}, {'name': '_twitter_sess', 'value': 'BAh7CiIKZmxhc2hJQzonQWN0aW9uQ29udHJvbGxlcjo6Rmxhc2g6OkZsYXNo%250ASGFzaHsABjoKQHVzZWR7ADoPY3JlYXRlZF9hdGwrCCdSssRmAToMY3NyZl9p%250AZCIlNjA2YzcwYWY1Y2YxNWYyMWJiN2Q1NzYxMzljMWQ4ZmY6B2lkIiUyMzY3%250AODI2NTBmZTY4Yzk0OGU0M2NhMmZiMjhkMTI5ZjoJdXNlcmwrCQAAVf%252B%252BrAEO--85a2fcc2357bbe6c241bb9adcef13432c2c8885c', 'path': '/', 'domain': '.twitter.com', 'secure': True, 'httpOnly': True}, {'name': 'twid', 'value': '"u=1009277727835226112"', 'path': '/', 'domain': '.twitter.com', 'secure': True, 'httpOnly': False, 'expiry': 1856258320}, {'name': 'auth_token', 'value': '5c6e11c5627968b33223c990a3c4e392f19f5318', 'path': '/', 'domain': '.twitter.com', 'secure': True, 'httpOnly': True, 'expiry': 1856258320}, {'name': 'csrf_same_site_set', 'value': '1', 'path': '/', 'domain': '.twitter.com', 'secure': True, 'httpOnly': True, 'expiry': 1572347920}, {'name': 'lang', 'value': 'en', 'path': '/', 'domain': 'twitter.com', 'secure': False, 'httpOnly': False}, {'name': 'csrf_same_site', 'value': '1', 'path': '/', 'domain': '.twitter.com', 'secure': True, 'httpOnly': True, 'expiry': 1572434320}]
-    print(cookies)
-    return cookies
+    for i in cookies:
+        jar.set(i['name'], i['value'], path=i['path'], domain=i['domain'], secure=i['secure'])
+    session.cookies = jar
+    return jar
 
 
-def get_index_page(kw):
-    url = f'https://twitter.com/search?q={kw}&src=typd'
-    r = session.get('https://twitter.com/login', timeout=5, headers=headers, proxies=proxies)
-    print(r)
-    print(r.text)
+def get_first_p(kw):
+    # 获取搜索页面源码，解析并返回其中的position
+    try:
+        r = session.get('https://twitter.com/search?vertical=default&q=%E4%BB%8A%E5%A4%A9&l=zh&src=typd')
+        r.raise_for_status()
+        pattern = re.compile(r'data-max-position="(.*?)"', re.S)
+        position = pattern.findall(r.text)
+        return position
+    except:
+        print('fail to get first position')
 
 
-def main(kw='Python'):
-    session.cookies = login()
-    index_page = get_index_page(kw)
+def get_news(position, kw):
+    # 使用position 获取对应的页面源码
+    url = f'https://twitter.com/i/search/timeline?vertical=news&q={kw}&l=en&src=typd&composed_count=0&include_available_' \
+          f'features=1&include_entities=1&include_new_items_bar=true&interval=30000&latent_count=0&min_position={position}'
+    try:
+        r = session.get(url)
+        r.raise_for_status()
+        return r.text
+    except:
+        print(f'fail to get position {position}')
+
+
+def parse_text(text):
+    # 从position对应的页面源码中解析用户key
+    html = eval(text)['items_html']
+    position = eval(text)['max_position']
+    pattern = re.compile(
+        r' class=\"account-group js-account-group js-action-profile js-user-profile-link js-nav\" href=\"\\(.*?)"')
+    user = pattern.findall(html)
+    return user, position
+
+
+def get_user_info(user_keys):
+    # 使用用户key从用户主页获取用户信息
+    users = []
+    for i in user_keys:
+        user_info = {}
+        user_info['user_key'] = i
+        url = 'https://twitter.com' + i
+        r = session.get(url)
+
+        pattern_name = re.compile(r' class="ProfileHeaderCard-nameLink u-textInheritColor js-nav">(.*?)<')
+        name = pattern_name.findall(r.text)
+        user_info['name'] = name[0] if name else ''
+
+        pattern_description = re.compile(r'<p class="ProfileHeaderCard-bio u-dir" dir="ltr">(.*?)<')
+        description = pattern_description.findall(r.text)
+        user_info['description'] = description[0] if description else ''
+
+        pattern_location = re.compile(r' <span class="ProfileHeaderCard-locationText u-dir" dir="ltr">(.*?)<')
+        location = pattern_location.findall(r.text)
+        user_info['location'] = location[0] if location else ''
+
+        pattern_join_date = re.compile(
+            r' <span class="ProfileHeaderCard-joinDateText js-tooltip u-dir" dir="ltr" title="11:22 AM - 29 Oct 2018">Joined(.*?)</span>')
+        join_date = pattern_join_date.findall(r.text)
+        user_info['join_date'] = join_date[0] if join_date else ''
+        users.append(user_info)
+    return users
+
+
+def main(kw='今天', num=10):
+    # kw : 要搜索的内容 num ：要搜索的用户数量
+    user_keys = []
+    login()
+    print(session.cookies)
+    position = get_first_p(kw)
+    while True:
+        user, position = parse_text(get_news(position, kw))
+        user_keys += user
+        user_keys = list(set(user_keys))
+        if len(user_keys) >= num:
+            break
+    user_info = get_user_info(user_keys)
+    return user_info[:num]
 
 
 if __name__ == '__main__':
     stime = time.time()
-    main()
+    user_info = main()
+    print(user_info)
+    print(len(user_info))
     print(f"time used : {time.time()-stime}")
