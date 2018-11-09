@@ -48,16 +48,19 @@ def parse(page):
 
 def ip_check(ip):
     # 使用代理访问百度,检查IP是否可用,剔除其中不可用部分
+    count = 0
     for i in ip:
+        count += 1
         server = i['ip'] + ':' + i['port']
         proxies = {'http': 'http://' + server,
                    'https': 'https://' + server
                    }
         try:
-            r = requests.get('https://www.baidu.com', proxies=proxies, timeout=1)
-            if r.status_code != 200:
-                i = {}
+            r = requests.get('https://www.baidu.com', proxies=proxies,timeout=3)
+            r.raise_for_status()
+            print(f'ip {count} is ok !')
         except:
+            print(f'ip {count} is nok !')
             i = {}
     return [i for i in ip if i != {}]
 
