@@ -28,7 +28,6 @@ def ip_check(server):
     except:
         print(f'process {os.getpid()} checked {server} is  nok ')
 
-
 if __name__ == '__main__':
     file = 'ip.txt'
     ip_list = get_ip(file)
