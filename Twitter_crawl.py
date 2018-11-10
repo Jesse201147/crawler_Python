@@ -51,6 +51,7 @@ def get_first_p(kw):
     except:
         print('fail to get first position')
 
+        
 
 def get_news(position, kw):
     # 使用position 获取对应的页面源码
