@@ -1,6 +1,6 @@
 # 这些是我在学习Python爬虫时的一部分练手项目:
   
-Twitter_crawl.py(登录Twitter,搜索抓取搜索到相关内容的作者详细信息):   
+##Twitter_crawl.py(登录Twitter,搜索抓取搜索到相关内容的作者详细信息):   
    
   1 使用selenium 登录Twitter 获取cookies   
   2 使用cookies获取搜索页面,从中解析出搜索到twitter的position参数  
